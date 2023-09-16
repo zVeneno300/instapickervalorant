@@ -1,7 +1,8 @@
 import tkinter as tk
 import pyautogui
 import time
-
+import threading
+import keyboard  
 
 coordenadas = {
     "kayo": (220, 930), "astra": (300, 930), "viper": (380, 930),
@@ -22,7 +23,6 @@ def iniciar_programa():
     executando = True
     inicio = time.time()
 
-   
     time.sleep(3)
     
     while executando:
@@ -37,13 +37,11 @@ def iniciar_programa():
             pyautogui.click(x=coordenadas["fixas"][0], y=coordenadas["fixas"][1])
             time.sleep(0.005)
 
-
 nomes_opcoes = [
     "kayo", "astra", "viper", "omen", "kj", "gekko", "cypher", "jett", "skye",
     "sage", "sova", "chamber", "dead", "neon", "harbor", "fade", "phoenix",
     "breach", "brimstone", "yoru", "raze", "reyna"
 ]
-
 
 cores_fixas = [
     "blue", "green", "skyblue", "red", "yellow", "pink", "purple", "orange", "brown",
@@ -51,17 +49,13 @@ cores_fixas = [
     "teal", "maroon", "coral", "slategray", "darkorchid"
 ]
 
-
-cores_linhas = [ "#00C4A6", "#721CFF", "#BB6EFF", "#005084", "#E1604B"]
-
+cores_linhas = ["#00C4A6", "#721CFF", "#BB6EFF", "#005084", "#E1604B"]
 
 janela = tk.Tk()
 janela.title("japones1280x1080")
 
-
 for i in range(5):
     janela.grid_columnconfigure(i, weight=1)
-
 
 botoes_opcao = []
 for nome_opcao, cor in zip(nomes_opcoes, cores_fixas):
@@ -71,26 +65,32 @@ for nome_opcao, cor in zip(nomes_opcoes, cores_fixas):
     botao.grid(row=linha, column=coluna, padx=5, pady=5)
     botoes_opcao.append(botao)
 
-
     if linha < len(cores_linhas):
         botao.configure(bg=cores_linhas[linha])
-
 
 botao_iniciar = tk.Button(janela, text="Iniciar", command=iniciar_programa)
 botao_iniciar.grid(row=6, column=0, columnspan=5, pady=10)
 
+label_tecla_iniciar = tk.Label(janela, text="Atalho Iniciar: 9")
+label_tecla_iniciar.grid(row=7, column=0, padx=5, pady=5)
+
+label_tecla_parar = tk.Label(janela, text="Atalho Parar: 0")
+label_tecla_parar.grid(row=7, column=3, padx=5, pady=5)
 
 def selecionar_opcao(nome):
     global opcao_selecionada
     opcao_selecionada = nome
 
+def parar_loop():
+    global executando
+    executando = False
 
-def iniciar_com_tecla(event):
-    if event.char.lower() == "p":
-        iniciar_programa()
+def iniciar_loop():
+    global thread_loop
+    thread_loop = threading.Thread(target=iniciar_programa)
+    thread_loop.start()
 
-
-janela.bind("<Key>", iniciar_com_tecla)
-
+keyboard.add_hotkey('9', iniciar_loop)
+keyboard.add_hotkey('0', parar_loop)
 
 janela.mainloop()
