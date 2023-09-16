@@ -1,6 +1,8 @@
 import tkinter as tk
 import pyautogui
 import time
+import threading
+import keyboard 
 
 
 coordenadas = {
@@ -95,18 +97,26 @@ for nome_opcao, cor in zip(nomes_opcoes, cores_fixas):
 botao_iniciar = tk.Button(janela, text="Iniciar", command=iniciar_programa)
 botao_iniciar.grid(row=6, column=0, columnspan=5, pady=10)
 
+label_tecla_iniciar = tk.Label(janela, text="Atalho Iniciar: 9")
+label_tecla_iniciar.grid(row=7, column=0, padx=5, pady=5)
+
+label_tecla_parar = tk.Label(janela, text="Atalho Parar: 0")
+label_tecla_parar.grid(row=7, column=3, padx=5, pady=5)
 
 def selecionar_opcao(nome):
     global opcao_selecionada
     opcao_selecionada = nome
 
+def parar_loop():
+    global executando
+    executando = False
 
-def iniciar_com_tecla(event):
-    if event.char.lower() == "p":
-        iniciar_programa()
+def iniciar_loop():
+    global thread_loop
+    thread_loop = threading.Thread(target=iniciar_programa)
+    thread_loop.start()
 
-
-janela.bind("<Key>", iniciar_com_tecla)
-
+keyboard.add_hotkey('9', iniciar_loop)
+keyboard.add_hotkey('0', parar_loop)
 
 janela.mainloop()
